@@ -233,14 +233,14 @@ uri1_rest(Input) :- atom_codes(Atom, [X | Xs]),
                     Path = Input.
 %QUERY 
 uri1_rest(X | Xs) :- X = 63, !,
-                    atom_codes(Atom, [X | Xs]),
+                    atom_codes(Atom, Xs),
                     query(Atom), 
                     Query = Atom,
 %FRAGMENT
 uri1_rest(X | Xs) :- X = 35, !,
-                    atom_codes(Atom, [X | Xs]),
-                    fragment(Xs),
-                    Fragment = Xs.
+                    atom_codes(Atom, Xs),
+                    fragment(Atom),
+                    Fragment = Atom.
 
 %Rest
 uri1_rest(Input) :- member(63, Input), !, 
