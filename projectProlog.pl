@@ -202,7 +202,7 @@ zos(Input):- atom_codes(Input, List_codes), member(28, List_codes),
 
 %----------URI
 
-uri_parse(Uri_string, Uri) :- string_codes(Uri_string, Uri_codes), 
+uri_parse(Uri_string, Uri) :- string_codes(Uri_string, Uri_codes),
                             member(58, Uri_codes), !,
                             listPos(Uri_codes, 58, Pos),
                             atom_codes(Atom, Uri_codes),
@@ -212,53 +212,71 @@ uri_parse(Uri_string, Uri) :- string_codes(Uri_string, Uri_codes),
                             sub_atom(Atom, Pos, A, _, Rest),
                             uri(Scheme, Rest).
 
-uri(Scheme, Rest) :- atom_codes(Rest, Rest_codes), 
+uri(Scheme, Rest) :- atom_codes(Rest, Rest_codes),
                     nth0(0, Rest_codes, 47), !,
                     Identificatore = Scheme,
                     uri1(Rest).
 
 %URI 1
-uri1(Input) :- authority(Input),
-             Path= [], 
-             Query = [],
-             Fragment = [].
+uri1(Input) :- authority(Input), !,
+               Path= [],
+               Query = [],
+               Fragment = [].
 
-uri1(Input) :- atom_codes(Atom, [X | Xs]), 
-              X = 47, !,
-              uri1_rest(Xs).
+uri1(Input) :- atom_codes(Input, [X | Xs]),
+               X = 47, !,
+               uri1_rest(Xs).
 
 %PATH
-uri1_rest(Input) :- atom_codes(Atom, [X | Xs]),
-                    path(Input)
-                    Path = Input.
-%QUERY 
-uri1_rest(X | Xs) :- X = 63, !,
+uri1_rest(Input) :- atom_codes(Atom, Input),
+                    path(Atom),
+                    Path = Atom.
+%QUERY
+uri1_rest([X | Xs]) :- X = 63, !,
                     atom_codes(Atom, Xs),
-                    query(Atom), 
-                    Query = Atom,
+                    query(Atom),
+                    Query = Atom.
 %FRAGMENT
-uri1_rest(X | Xs) :- X = 35, !,
+uri1_rest([X | Xs]) :- X = 35, !,
                     atom_codes(Atom, Xs),
                     fragment(Atom),
                     Fragment = Atom.
 
 %Rest
-uri1_rest(Input) :- member(63, Input), !, 
+uri1_rest(Input) :- member(63, Input), !,
                     listPos(Uri_codes, 63, Pos),
                     atom_codes(Uri_Atom, Uri_codes),
                     P is Pos - 1,
                     sub_atom(Uri_Atom, 0, P, After, Path),
                     A is After - 1, Ps is Pos + 1,
                     sub_atom(Uri_Atom, Ps, A, _, Rest),
-                    path(Path), 
-                    Path = Path.
+                    path(Path),
+                    Path = Path,
                     uri1_rest(Rest).
 
-uri1_rest(Input):- member()
+uri1_rest(Input):- member(63, Input), !,
+                   member(35, Input), !,
+                   listPos(Uri_codes, 35, Pos),
+                   atom_codes(Uri_Atom, Uri_codes),
+                   P is Pos - 1,
+                   sub_atom(Uri_Atom, 0, P, After, Query),
+                   A is After - 1, Ps is Pos + 1,
+                   sub_atom(Uri_Atom, Ps, A, _, Fragment),
+                   query(Query),
+                   Query = Query,
+                   fragment(Fragment).
 
-               
+%Completo
+uri1(Input):- atom_codes(Uri_Atom, Uri_codes), urirest(Uri_codes).
 
-
-
-
-
+urirest(Input):- member(47, Input), !,
+                 listPos(Uri_codes, 47, Pos),
+                 Pos =\= 1, Pos =\= 2,
+                 atom_codes(Uri_Atom, Uri_codes),
+                 P is Pos - 1,
+                 sub_atom(Uri_Atom, 0, P, After, Authority),
+                 A is After - 1, Ps is Pos + 1,
+                 sub_atom(Uri_Atom, Ps, A, _, Rest),
+                 authority(Authority),
+                 Authority = Authority,
+                 uri1_rest(Rest).
