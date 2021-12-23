@@ -180,3 +180,85 @@ id44(Input) :- atom_codes(Input, List_codes),
                member(46, List_codes), !.
 id44(Input) :- atom_codes(Input, List_codes), length(List_codes, Y), Y > 44, !, fail.
 id44(Input) :- atom_codes(Input, List_codes), controlX(List_codes), !.
+
+
+/*ZOS*/
+
+zos(Input):- id44(Input), 
+             Zos = Input, !.
+
+zos(Input):- atom_codes(Input, List_codes), member(28, List_codes), 
+            member(29, List_codes), !,
+            listPos(List_codes, 28, X), length(List_codes, Length),
+            atom_codes(Atom, List_codes),
+            L is Length - X;
+            sub_atom(Atom, 0, L, After, SubAtom),
+            id44(SubAtom), !, 
+            A is After - 2,
+            sub_atom(Atom, X, A, _,SubAtom2),
+            id8(SubAtom2), !,
+            atom_concat(SubAtom + SubAtom2, Zos).
+
+
+%----------URI
+
+uri_parse(Uri_string, Uri) :- string_codes(Uri_string, Uri_codes), 
+                            member(58, Uri_codes), !,
+                            listPos(Uri_codes, 58, Pos),
+                            atom_codes(Atom, Uri_codes),
+                            P is Pos - 1,
+                            sub_atom(Atom, 0, P, After, Scheme),
+                            A is After - 1,
+                            sub_atom(Atom, Pos, A, _, Rest),
+                            uri(Scheme, Rest).
+
+uri(Scheme, Rest) :- atom_codes(Rest, Rest_codes), 
+                    nth0(0, Rest_codes, 47), !,
+                    Identificatore = Scheme,
+                    uri1(Rest).
+
+%URI 1
+uri1(Input) :- authority(Input),
+             Path= [], 
+             Query = [],
+             Fragment = [].
+
+uri1(Input) :- atom_codes(Atom, [X | Xs]), 
+              X = 47, !,
+              uri1_rest(Xs).
+
+%PATH
+uri1_rest(Input) :- atom_codes(Atom, [X | Xs]),
+                    path(Input)
+                    Path = Input.
+%QUERY 
+uri1_rest(X | Xs) :- X = 63, !,
+                    atom_codes(Atom, [X | Xs]),
+                    query(Atom), 
+                    Query = Atom,
+%FRAGMENT
+uri1_rest(X | Xs) :- X = 35, !,
+                    atom_codes(Atom, [X | Xs]),
+                    fragment(Xs),
+                    Fragment = Xs.
+
+%Rest
+uri1_rest(Input) :- member(63, Input), !, 
+                    listPos(Uri_codes, 63, Pos),
+                    atom_codes(Uri_Atom, Uri_codes),
+                    P is Pos - 1,
+                    sub_atom(Uri_Atom, 0, P, After, Path),
+                    A is After - 1, Ps is Pos + 1,
+                    sub_atom(Uri_Atom, Ps, A, _, Rest),
+                    path(Path), 
+                    Path = Path.
+                    uri1_rest(Rest).
+
+uri1_rest(Input):- member()
+
+               
+
+
+
+
+
