@@ -165,10 +165,19 @@ news(Input) :- host(Input), !.
 telfax(Input) :- userinfo(Input), !.
 
 /* caratteri alfanumerici */
-controlX(List_codes) :- member(X, List_codes), X > 47, X < 58, !.
-controlX(List_codes) :- member(X, List_codes), X > 64, X < 91, !.
-controlX(List_codes) :- member(X, List_codes), X > 96, X < 123, !.
+controlX(List_codes):- member(X, List_codes), X > 47, X < 58, !.
+controlX(List_codes):- member(X, List_codes), X > 64, X < 91, !.
+controlX(List_codes):- member(X, List_codes), X > 96, X < 123, !.
+
+controlX44(List_codes):- member(X, List_codes), X > 45, X < 58, !.
+controlX44(List_codes):- member(X, List_codes), X > 64, X < 91, !.
+controlX44(List_codes):- member(X, List_codes), X > 96, X < 123, !.
 
 /* id8 */
-id8(Input) :- atom_codes(Input, List_codes), length(List_codes, Y), Y > 8, !, fail.
-id8(Input) :- atom_codes(Input, List_codes), controlX(List_codes), !.
+id8(Input):- atom_codes(Input, List_codes),
+             length(List_codes, Y),
+             Y > 8, !, fail.
+id8(Input):- atom_codes(Input, List_codes), controlid8(List_codes), !.
+
+controlid8([X | Xs]):- X > 47, X < 58, !, fail.
+controlid8(List_codes):- controlX(List_codes).
