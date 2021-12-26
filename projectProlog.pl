@@ -174,9 +174,14 @@ id8(Input) :- atom_codes(Input, List_codes), length(List_codes, Y), Y > 8, !, fa
 id8(Input) :- atom_codes(Input, List_codes), controlX(List_codes), !.
 
 /* id44 da controllare */
-id44(Input) :- atom_codes(Input, List_codes),
-               length(List_codes, Y),
-               Y is 1,
-               member(46, List_codes), !.
-id44(Input) :- atom_codes(Input, List_codes), length(List_codes, Y), Y > 44, !, fail.
-id44(Input) :- atom_codes(Input, List_codes), controlX(List_codes), !.
+id44(Input):- atom_codes(Input, List_codes),
+              length(List_codes, Y),
+              Y > 44, !, fail.
+id44(Input):- atom_codes(Input, List_codes), controlid44(List_codes), !.
+
+controlid44([X | Xs]):- X > 45, X < 58, !, fail.
+controlid44([X | Xs]):- last_element(46, [X | Xs]), !, fail.
+controlid44(List_codes):- controlX44(List_codes).
+
+last_element(X, [X]).
+last_element(X, [_ | Xs]) :- last_element(X, Xs).
