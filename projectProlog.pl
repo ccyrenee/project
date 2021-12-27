@@ -102,11 +102,9 @@ hostaut(Y) :- string_codes(Y, List_input),
 /* indirizzo_ip */
 indirizzo_ip(Input):- atom_codes(Input, List_input), validate_point(List_input).
 
-validate_point(L):- nth1(12, L, 46), nth1(8, L, 46), nth1(4, L, 46),
-                    string_codes(String, L),
+validate_point(L):- atom_codes(String, L),
                     split_string(String, ".", "", List_string),
-                    length(List_string, 4),
                     validate_number(List_string).
 
-validate_number([L | Ls]):- digit(L), validate_number(Ls), !.
+validate_number([L | Ls]):- digit255(L), !, validate_number(Ls).
 validate_number([]).
