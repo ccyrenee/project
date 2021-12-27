@@ -369,3 +369,9 @@ uri1_r(Codes) :- member(35, Codes), !,
                 Path = SubAtom1,
                 fragment(SubAtom2), !,
                 Fragment = SubAtom2.
+                
+/* uri2 */
+control_uri2(Scheme, Rest):- Scheme == 'mailto', !, mailto(Rest).
+control_uri2(Scheme, Rest):- Scheme == 'tel', !, tel(Rest).
+control_uri2(Scheme, Rest):- Scheme == 'fax', !, fax(Rest).
+control_uri2(Scheme, Rest):- Scheme == 'zos', !, zos(Rest).           
