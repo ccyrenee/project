@@ -171,7 +171,9 @@ fragment(Input).
 /* scheme_syntax */
 scheme_syntax(Input):- mailto(Input), !.
 scheme_syntax(Input):- news(Input), !.
-scheme_syntax(Input):- telfax(Input), !.
+scheme_syntax(Input):- tel(Input), !.
+scheme_syntax(Input):- fax(Input), !.
+scheme_syntax(Input):- zos(Input), !.
 
 
 /* mailto */
