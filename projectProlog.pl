@@ -237,16 +237,17 @@ id8(Input):- atom_codes(Input, List_codes),
 controlid8([X | Xs]):- X > 45, X < 58, !, fail.
 controlid8(List_codes):- controlX(List_codes).
 
-/* ZOS */
+/* zos */
+zos(Input):- id44(Input),
+             Zos = Input, !.
 
-zos(Input) :- id44(Input),
-              Zos = Input, !.
-
-zos(Input) :- atom_codes(Input, List_codes), member(28, List_codes),
+zos(Input):- atom_codes(Input, List_codes),
+            member(28, List_codes), !,
             member(29, List_codes), !,
-            listPos(List_codes, 28, X), length(List_codes, Length),
+            listPos(List_codes, 28, X),
+            length(List_codes, Length),
             atom_codes(Atom, List_codes),
-            L is Length - X;
+            L is Length - X,
             sub_atom(Atom, 0, L, After, SubAtom),
             id44(SubAtom), !,
             A is After - 2,
